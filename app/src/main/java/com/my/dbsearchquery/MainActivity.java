@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private MyAdapter adapter;
     private List<CaseInfo> data;
     private DBUtils db;
+    private String keyWorld = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Log.d(TAG + "onTextChanged--->", "CharSequence=" + s + ",start=" + start + ",before=" + before + ",count=" + count);
         //TODO 在这里添加查询
         List<CaseInfo> tempData = db.fuzzyQueryByName(s.toString());
+        keyWorld = s.toString();
         adapter.setDatas(tempData);
         if (s.equals("")) {
             adapter.setDatas(data);
@@ -103,10 +106,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         private List<CaseInfo> datas;
         private Context context;
+        private int color;
 
         public MyAdapter(List<CaseInfo> datas, Context context) {
             this.datas = datas;
             this.context = context;
+
+            this.color = this.context.getResources().getColor(R.color.colorAccent);
         }
 
         public void setDatas(List<CaseInfo> datas) {
@@ -148,10 +154,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             if (datas != null) {
-                viewHolder.tv_name_item_MainAct.setText(datas.get(position).getName());
+                viewHolder.tv_name_item_MainAct.setText(TextUtilTools.highlight(datas.get(position).getName(), keyWorld, color));
                 String time = subStr(datas.get(position).getTime() + "");   //截取字符串
-                viewHolder.tv_time_item_MainAct.setText(time);
-                viewHolder.tv_number_item_MainAct.setText(datas.get(position).getNumber());
+                viewHolder.tv_time_item_MainAct.setText(TextUtilTools.highlight(time,keyWorld,color));
+                viewHolder.tv_number_item_MainAct.setText(TextUtilTools.highlight(datas.get(position).getNumber(),keyWorld,color));
             }
             return convertView;
         }
